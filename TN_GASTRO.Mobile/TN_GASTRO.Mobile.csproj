@@ -1,0 +1,65 @@
+<Project Sdk="Uno.Sdk">
+    <PropertyGroup>
+        <!-- ✅ Chỉ build Android -->
+        <TargetFrameworks>net9.0-android</TargetFrameworks>
+
+        <OutputType>Exe</OutputType>
+        <UnoSingleProject>true</UnoSingleProject>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+
+        <!-- App metadata -->
+        <ApplicationTitle>TN_GASTRO.Mobile</ApplicationTitle>
+        <ApplicationId>com.companyname.tngastro</ApplicationId>
+        <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
+        <ApplicationVersion>
+            1
+        </ApplicationVersion>
+        <ApplicationPublisher>Admin</ApplicationPublisher>
+        <Description>TN_GASTRO.Mobile powered by Uno Platform.</Description>
+
+        <!-- Uno features (giữ như đang dùng) -->
+        <UnoFeatures>
+            Material;
+            Dsp;
+            Hosting;
+            Toolkit;
+            Logging;
+            MVUX;
+            Configuration;
+            HttpKiota;
+            Serialization;
+            Localization;
+            Navigation;
+            ThemeService;
+            SkiaRenderer;
+        </UnoFeatures>
+
+        <!-- Min SDK cho Android -->
+        <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+
+        <!-- Dev settings cho Android -->
+        <AndroidPackageFormat>apk</AndroidPackageFormat>
+        <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+        <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
+        <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+    </PropertyGroup>
+
+    <!-- Nếu bạn có khai báo Page/Folder thì giữ nguyên như cũ -->
+    <ItemGroup>
+        <Page Update="Presentation\Views\Login\LoginPage.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </Page>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Presentation\Views\Home\" />
+        <Folder Include="Presentation\ViewModels\Home\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Update="Presentation\Views\Hello\HelloPage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+    </ItemGroup>
+</Project>

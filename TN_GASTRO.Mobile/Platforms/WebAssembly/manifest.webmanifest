@@ -1,0 +1,10 @@
+{
+  "background_color": "#ffffff",
+  "description": "TN_GASTRO.Mobile",
+  "display": "standalone",
+  "name": "TN_GASTRO.Mobile",
+  "short_name": "TN_GASTRO.Mobile",
+  "start_url": "/index.html",
+  "theme_color": "#ffffff",
+  "scope": "/"
+}
