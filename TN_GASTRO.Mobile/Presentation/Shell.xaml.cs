@@ -37,10 +37,8 @@ public sealed partial class Shell : UserControl
 
     private void Shell_Loaded(object sender, RoutedEventArgs e)
     {
-        // Điều hướng vào LoginPage
-        RootFrame.Navigate(typeof(LoginPage));
-
-        // Ẩn Splash sau khi có frame
+        RootFrame.Navigate(typeof(TN_GASTRO.Mobile.Presentation.Views.Login.LoginPage));
         Splash.Visibility = Visibility.Collapsed;
+
     }
 }

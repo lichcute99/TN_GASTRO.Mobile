@@ -1,144 +1,235 @@
-﻿<!--<Page x:Class="TN_GASTRO.Mobile.Presentation.Views.Login.LoginPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:vm="using:TN_GASTRO.Mobile.Presentation.ViewModels.Login"
-      x:DefaultBindMode="OneWay">
-
-    --><!-- nếu muốn có IntelliSense cho thuộc tính VM:
-       <Page.DataContext>
-         <vm:LoginModel/>
-       </Page.DataContext>
-       (nhưng với x:Bind ViewModel.* thì không bắt buộc)
-  --><!--
-
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-        Padding="24">
-        <StackPanel Spacing="16">
-
-            --><!-- Ví dụ hiển thị version + tên thiết bị --><!--
-            <TextBlock Text="{x:Bind ViewModel.AppVersion}" />
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <Ellipse Width="8" Height="8"
-                 Fill="{x:Bind ViewModel.DeviceIndicatorBrush}" />
-                <TextBlock Text="{x:Bind ViewModel.DeviceNameDisplay}" />
-            </StackPanel>
-
-            --><!-- Ô mật khẩu hiển thị * --><!--
-            <TextBlock FontSize="28"
-                 Text="{x:Bind ViewModel.MaskedPassword}" />
-
-            --><!-- keypad chỉ minh hoạ một vài nút --><!--
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <Button Content="1"
-                Command="{x:Bind ViewModel.TapDigitCommand}"
-                CommandParameter="1"/>
-                <Button Content="2"
-                Command="{x:Bind ViewModel.TapDigitCommand}"
-                CommandParameter="2"/>
-                <Button Content="⌫"
-                Command="{x:Bind ViewModel.BackspaceCommand}"/>
-            </StackPanel>
-
-            <Button Content="{x:Bind ViewModel.LoginText}"
-              Command="{x:Bind ViewModel.LoginCommand}"/>
-
-            --><!-- Nút mở popup --><!--
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <Button Content="Đăng ký thiết bị"
-                Click="Register_Click"/>
-                <Button Content="Ngôn ngữ"
-                Click="Language_Click"/>
-            </StackPanel>
-
-        </StackPanel>
-    </Grid>
-</Page>-->
-<Page
+﻿<Page
     x:Class="TN_GASTRO.Mobile.Presentation.Views.Login.LoginPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:utu="using:Uno.Toolkit.UI"
+    xmlns:uit="using:Uno.UI.Toolkit"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.Resources>
+        <!-- Font Oswald -->
+        <FontFamily x:Key="OswaldFont">
+            ms-appx:///Assets/Fonts/Oswald-Medium.ttf#Oswald
+        </FontFamily>
+                <!-- (tuỳ chọn) Áp dụng mặc định cho mọi TextBlock trong trang -->
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource OswaldFont}" />
+        </Style>
+
+        <!-- (tuỳ chọn) Áp dụng mặc định cho mọi Button (text trong Button sẽ dùng Oswald) -->
+        <Style TargetType="Button">
+            <Setter Property="FontFamily" Value="{StaticResource OswaldFont}" />
+        </Style>
+        <!-- Palette -->
+        <Color x:Key="Clr.Header">#0F2C3D</Color>
+        <Color x:Key="Clr.Card">#DCE3E7</Color>
+        <Color x:Key="Clr.TileBg">#FFFFFFFF</Color>
+        <Color x:Key="Clr.TileText">#083A45</Color>
+        <Color x:Key="Clr.Primary">#1E5270</Color>
+        <Color x:Key="Clr.Danger">#CC2E24</Color>
+
+        <SolidColorBrush x:Key="Brush.Header"  Color="{StaticResource Clr.Header}"/>
+        <SolidColorBrush x:Key="Brush.Card"    Color="{StaticResource Clr.Card}"/>
+        <SolidColorBrush x:Key="Brush.TileBg"  Color="{StaticResource Clr.TileBg}"/>
+        <SolidColorBrush x:Key="Brush.TileText" Color="{StaticResource Clr.TileText}"/>
+        <SolidColorBrush x:Key="Brush.Primary" Color="{StaticResource Clr.Primary}"/>
+        <SolidColorBrush x:Key="Brush.Danger"  Color="{StaticResource Clr.Danger}"/>
+
+        <!-- Styles -->
+        <Style x:Key="NumButtonStyle" TargetType="Button">
+            <Setter Property="FontFamily" Value="{StaticResource OswaldFont}"/>
+            <Setter Property="Background" Value="{StaticResource Brush.TileBg}"/>
+            <Setter Property="Foreground" Value="{StaticResource Brush.TileText}"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="MinHeight" Value="88"/>
+            <Setter Property="MinWidth"  Value="88"/>
+        </Style>
+
+        <Style x:Key="DeleteButtonStyle" BasedOn="{StaticResource NumButtonStyle}" TargetType="Button">
+            <Setter Property="FontFamily" Value="{StaticResource OswaldFont}"/>
+            <Setter Property="Background" Value="{StaticResource Brush.Primary}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}"/>
+                            <Image
+                        Source="/Assets/Icons/Xoakytu.png"
+                        Stretch="Fill"
+                        Width="50.31640625"
+                        Height="30"
+                        Opacity="1"
+                        RenderTransformOrigin="0.5,0.5">
+                                <Image.RenderTransform>
+                                    <RotateTransform Angle="0" />
+                                </Image.RenderTransform>
+                            </Image>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <Style x:Key="LoginButtonStyle" TargetType="Button">
+            <Setter Property="FontFamily" Value="{StaticResource OswaldFont}"/>
+            <Setter Property="Background" Value="{StaticResource Brush.Danger}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="MinHeight" Value="88"/>
+        </Style>
+    </Page.Resources>
+
+    <!-- ✅ Safe-area bằng VisibleBoundsPadding: KHÔNG dùng AlwaysPadding -->
+    <Grid
+        Background="{StaticResource Brush.Header}"
+        uit:VisibleBoundsPadding.PaddingMask="Top">
+
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="2*" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"/>
+            <!-- Header -->
+            <RowDefinition Height="*"/>
+            <!-- Body -->
         </Grid.RowDefinitions>
 
-        <!-- Header -->
-        <StackPanel Grid.Row="0" VerticalAlignment="Center" Spacing="8" HorizontalAlignment="Center">
-            <TextBlock Text="TNKAS" FontSize="40" FontWeight="SemiBold" />
-            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
-                <TextBlock Text="{x:Bind ViewModel.AppVersion}" />
-                <Ellipse Width="8" Height="8" Fill="{x:Bind ViewModel.DeviceIndicatorBrush}" VerticalAlignment="Center"/>
-                <TextBlock Text="{x:Bind ViewModel.DeviceNameDisplay}" />
-            </StackPanel>
-
-            <!-- ****** -->
-            <Border Background="{ThemeResource TextControlBackground}"
-                    Padding="16" CornerRadius="12" MinWidth="260">
-                <TextBlock Text="{x:Bind ViewModel.MaskedPassword}" 
-                           HorizontalAlignment="Center"
-                           FontSize="28" FontWeight="Bold" />
-            </Border>
-        </StackPanel>
-
-        <!-- Numpad -->
-        <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,12,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-            </Grid.RowDefinitions>
+        <!-- HEADER -->
+        <Grid Margin="12,8,12,12">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Row 1 -->
-            <Button Grid.Row="0" Grid.Column="0" Content="7"
-                    Command="{x:Bind ViewModel.TapDigitCommand}" CommandParameter="7" />
-            <Button Grid.Row="0" Grid.Column="1" Content="8"
-                    Command="{x:Bind ViewModel.TapDigitCommand}" CommandParameter="8" />
-            <Button Grid.Row="0" Grid.Column="2" Content="9"
-                    Command="{x:Bind ViewModel.TapDigitCommand}" CommandParameter="9" />
-
-            <!-- Row 2 -->
-            <Button Grid.Row="1" Grid.Column="0" Content="4"
-                    Command="{x:Bind ViewModel.TapDigitCommand}" CommandParameter="4" />
-            <Button Grid.Row="1" Grid.Column="1" Content="5"
-                    Command="{x:Bind ViewModel.TapDigitCommand}" CommandParameter="5" />
-            <Button Grid.Row="1" Grid.Column="2" Content="6"
-                    Command="{x:Bind ViewModel.TapDigitCommand}" CommandParameter="6" />
-
-            <!-- Row 3 -->
-            <Button Grid.Row="2" Grid.Column="0" Content="1"
-                    Command="{x:Bind ViewModel.TapDigitCommand}" CommandParameter="1" />
-            <Button Grid.Row="2" Grid.Column="1" Content="2"
-                    Command="{x:Bind ViewModel.TapDigitCommand}" CommandParameter="2" />
-            <Button Grid.Row="2" Grid.Column="2" Content="3"
-                    Command="{x:Bind ViewModel.TapDigitCommand}" CommandParameter="3" />
-
-            <!-- Row 4 -->
-            <Button Grid.Row="3" Grid.Column="0" Content="0"
-                    Command="{x:Bind ViewModel.TapDigitCommand}" CommandParameter="0" />
-            <Button Grid.Row="3" Grid.Column="1" Content="⌫"
-                    Command="{x:Bind ViewModel.BackspaceCommand}" />
-            <Button Grid.Row="3" Grid.Column="2" Content="{x:Bind ViewModel.LoginText}"
-                    Command="{x:Bind ViewModel.LoginCommand}" />
+            <TextBlock Text="V.25454" Foreground="White" VerticalAlignment="Center"/>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                <Ellipse Width="6" Height="6" Fill="Lime"/>
+                <TextBlock Text="M1" Foreground="White"/>
+            </StackPanel>
         </Grid>
 
-        <!-- Footer: 2 nút phụ -->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16" Margin="0,16,0,24">
-            <Button Content="🌐" Width="64" Height="48"
-                    Command="{x:Bind ViewModel.OpenLanguageDialogRequested}" />
-            <Button Content="Đăng ký thiết bị" 
-                    Command="{x:Bind ViewModel.OpenRegisterDialogRequested}" />
-        </StackPanel>
+        <!-- BODY -->
+        <Grid Grid.Row="1" Background="{StaticResource Brush.Header}">
+            <Grid Margin="8" Background="{StaticResource Brush.Header}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <!-- Logo -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Card **** -->
+                    <RowDefinition Height="*"/>
+                    <!-- Keypad -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Globe + LOGIN -->
+                </Grid.RowDefinitions>
+
+                <!-- LOGO -->
+                <Image Grid.Row="0"
+                       Source="ms-appx:///Assets/tnkas_logo.png"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Width="200" Height="50"
+                       Stretch="Uniform"
+                       Margin="0,8,0,8"/>
+
+                <!-- CARD **** -->
+                <Border Grid.Row="1" Background="{StaticResource Brush.Card}"
+                        CornerRadius="10" Padding="16" Margin="0,0,0,8">
+                    <TextBlock x:Name="PinDisplay" Text="****"
+                               FontSize="28" FontWeight="Bold"
+                               HorizontalAlignment="Center"/>
+                </Border>
+
+                <!-- KEYPAD -->
+                <Grid Grid.Row="2" Background="{StaticResource Brush.Header}" RowSpacing="8" ColumnSpacing="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- 7 8 9 -->
+                    <Button Grid.Row="0" Grid.Column="0" Content="7" Style="{StaticResource NumButtonStyle}" Click="OnNumClick"/>
+                    <Button Grid.Row="0" Grid.Column="1" Content="8" Style="{StaticResource NumButtonStyle}" Click="OnNumClick"/>
+                    <Button Grid.Row="0" Grid.Column="2" Content="9" Style="{StaticResource NumButtonStyle}" Click="OnNumClick"/>
+
+                    <!-- 4 5 6 -->
+                    <Button Grid.Row="1" Grid.Column="0" Content="4" Style="{StaticResource NumButtonStyle}" Click="OnNumClick"/>
+                    <Button Grid.Row="1" Grid.Column="1" Content="5" Style="{StaticResource NumButtonStyle}" Click="OnNumClick"/>
+                    <Button Grid.Row="1" Grid.Column="2" Content="6" Style="{StaticResource NumButtonStyle}" Click="OnNumClick"/>
+
+                    <!-- 1 2 3 -->
+                    <Button Grid.Row="2" Grid.Column="0" Content="1" Style="{StaticResource NumButtonStyle}" Click="OnNumClick"/>
+                    <Button Grid.Row="2" Grid.Column="1" Content="2" Style="{StaticResource NumButtonStyle}" Click="OnNumClick"/>
+                    <Button Grid.Row="2" Grid.Column="2" Content="3" Style="{StaticResource NumButtonStyle}" Click="OnNumClick"/>
+
+                    <!-- 0 + Delete -->
+                    <Button Grid.Row="3" Grid.Column="0" Content="0" Style="{StaticResource NumButtonStyle}" Click="OnNumClick"/>
+                    <Button Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Style="{StaticResource DeleteButtonStyle}" Click="OnDeleteClick"/>
+                </Grid>
+                <!-- GLOBE + LOGIN -->
+                <Grid Grid.Row="3" ColumnSpacing="8" Margin="0,8,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Nút chọn ngôn ngữ -->
+                    <Button x:Name="BtnLang"
+                    Width="96" Height="88"
+                    Background="{StaticResource Brush.Card}"
+                    CornerRadius="6">   
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Image Source="/Assets/Icons/Vector.png" Width="32" Height="32"/>
+                        </StackPanel>
+
+                        <Button.Flyout>
+                            <Flyout Placement="Top">
+                                <StackPanel Width="260" Spacing="12">
+                                    <!-- Header -->
+                                    <Border Background="{StaticResource Brush.Header}"
+                            CornerRadius="8,8,0,0" Padding="12">
+                                        <TextBlock Text="Ngôn ngữ" Foreground="White" FontWeight="SemiBold"/>
+                                    </Border>
+
+                                    <StackPanel Background="White" Padding="12" CornerRadius="0,0,8,8">
+                                        <RadioButton x:Name="rbVi" Content="Vietnamese" Tag="vi"
+                                     GroupName="Lang" Checked="OnLanguageRadioChecked" />
+                                        <RadioButton x:Name="rbEn" Content="English" Tag="en"
+                                     GroupName="Lang" Checked="OnLanguageRadioChecked" />
+                                        <RadioButton x:Name="rbDe" Content="German" Tag="de"
+                                     GroupName="Lang" Checked="OnLanguageRadioChecked" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
+
+                    <!-- Nút LOGIN -->
+                    <Button x:Uid="Login_Button"
+                    Grid.Column="1"
+                    Style="{StaticResource LoginButtonStyle}"
+                    Click="OnLoginClick"/>
+
+                    <!--<Button Grid.Column="1"
+                Content="LOGIN"
+                Style="{StaticResource LoginButtonStyle}"
+                Click="OnLoginClick"/>-->
+                </Grid>
+            </Grid>
+        </Grid>
     </Grid>
 </Page>
