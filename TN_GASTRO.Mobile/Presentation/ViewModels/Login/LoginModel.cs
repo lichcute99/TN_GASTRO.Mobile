@@ -141,31 +141,99 @@
 //}
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Globalization;
+using Windows.Storage;
 
-namespace TN_GASTRO.Mobile.Presentation.ViewModels.Login;
-
-public partial class LoginModel : ObservableObject
+namespace TN_GASTRO.Mobile.Presentation.ViewModels.Login
 {
-    [ObservableProperty]
-    private string version = "V.25454";
-
-    [ObservableProperty]
-    private string deviceMode = "M1";
-
-    public LoginModel()
+    public partial class LoginModel : ObservableObject
     {
-    }
+        // Header
+        [ObservableProperty] private string version = "V.25454";
+        [ObservableProperty] private string deviceMode = "M1";
 
-    [RelayCommand]
-    private async Task DangNhapAsync(CancellationToken ct)
-    {
-        // Giả lập xử lý
-        await Task.Delay(300, ct);
+        // PIN (không giới hạn ký tự)
+        [ObservableProperty]
+        private string pin = string.Empty;
 
-        // TODO: Thêm logic validate / gọi API sau này
+        // Hiển thị **** theo độ dài PIN
+        public string MaskedPin => new string('*', Pin?.Length ?? 0);
+
+        // Ngôn ngữ (vi/en/de)
+        [ObservableProperty]
+        private string selectedLanguage = "vi";
+
+        public LoginModel()
+        {
+            // nạp ngôn ngữ đã lưu (nếu có)
+            try
+            {
+#pragma warning disable CA1416
+                SelectedLanguage = (ApplicationData.Current.LocalSettings.Values["lang"] as string) ?? "vi";
+#pragma warning restore CA1416
+            }
+            catch
+            {
+                SelectedLanguage = "vi";
+            }
+
+            // Khi PIN thay đổi thì thông báo MaskedPin thay đổi để UI cập nhật
+            PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == nameof(Pin))
+                    OnPropertyChanged(nameof(MaskedPin));
+            };
+        }
+
+        // ====== Keypad ======
+        [RelayCommand]
+        private void AppendDigit(string? digit)
+        {
+            if (string.IsNullOrEmpty(digit)) return;
+            Pin += digit; // không giới hạn
+        }
+
+        [RelayCommand]
+        private void DeleteLast()
+        {
+            if (string.IsNullOrEmpty(Pin)) return;
+            Pin = Pin[..^1];
+        }
+
+        // ====== Login ======
+        [RelayCommand]
+        private async Task LoginAsync(CancellationToken ct)
+        {
+            // TODO: gọi API check PIN tại đây
+            await Task.Delay(300, ct);
+
+            // ví dụ log
+            System.Diagnostics.Debug.WriteLine($"Login with PIN length = {Pin.Length}");
+        }
+
+        // ====== Language ======
+        [RelayCommand]
+        private void ApplyLanguage()
+        {
+            var code = string.IsNullOrWhiteSpace(SelectedLanguage) ? "vi" : SelectedLanguage;
+
+            try
+            {
+#pragma warning disable CA1416
+                ApplicationData.Current.LocalSettings.Values["lang"] = code;
+#pragma warning restore CA1416
+                ApplicationLanguages.PrimaryLanguageOverride = code;
+            }
+            catch
+            {
+                // ignore
+            }
+        }
     }
 }
+
 
 
