@@ -1,6 +1,6 @@
 <Project Sdk="Uno.Sdk">
     <PropertyGroup>
-        <!-- ✅ Chỉ build Android -->
+        <!-- Chạy Android trước, có thể thêm skia/wasm sau -->
         <TargetFrameworks>net9.0-android</TargetFrameworks>
 
         <OutputType>Exe</OutputType>
@@ -8,74 +8,70 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
 
+        <!-- BẮT BUỘC: để XAML map tới Microsoft.UI.Xaml -->
+        <UseWinUI>true</UseWinUI>
+
         <!-- App metadata -->
         <ApplicationTitle>TN_GASTRO.Mobile</ApplicationTitle>
         <ApplicationId>com.companyname.tngastro</ApplicationId>
         <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
-        <ApplicationVersion>
-            1
-        </ApplicationVersion>
+        <ApplicationVersion>1</ApplicationVersion>
         <ApplicationPublisher>Admin</ApplicationPublisher>
         <Description>TN_GASTRO.Mobile powered by Uno Platform.</Description>
 
-        <!-- Uno features (giữ như đang dùng) -->
+        <!-- Bật các feature cần dùng -->
         <UnoFeatures>
             Material;
-            Dsp;
             Hosting;
             Toolkit;
             Logging;
             MVUX;
-            Configuration;
-            HttpKiota;
-            Serialization;
-            Localization;
             Navigation;
+            Localization;
             ThemeService;
             SkiaRenderer;
         </UnoFeatures>
 
-        <!-- Min SDK cho Android -->
+        <!-- Android -->
         <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
-
-        <!-- Dev settings cho Android -->
         <AndroidPackageFormat>apk</AndroidPackageFormat>
         <AndroidLinkMode>SdkOnly</AndroidLinkMode>
         <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
         <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     </PropertyGroup>
 
-    <!-- Nếu bạn có khai báo Page/Folder thì giữ nguyên như cũ -->
+    <!-- Generator cho các file Page XAML hiện có -->
     <ItemGroup>
+        <Page Update="App.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </Page>
+        <Page Update="Presentation\Shell.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </Page>
         <Page Update="Presentation\Views\Login\LoginPage.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </Page>
+        <Page Update="Presentation\Views\Home\HomePage.xaml">
             <Generator>MSBuild:Compile</Generator>
         </Page>
     </ItemGroup>
 
+    <!-- Toolkit/Material, CommunityToolkit.Mvvm: KHÔNG set Version ở đây (Uno dùng central versions) -->
     <ItemGroup>
-        <Folder Include="Presentation\Views\Home\" />
-        <Folder Include="Presentation\ViewModels\Home\" />
+        <PackageReference Include="CommunityToolkit.Mvvm" />
     </ItemGroup>
 
+    <!-- Tài nguyên cần copy -->
     <ItemGroup>
-      <Page Update="Presentation\Views\Hello\HelloPage.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
+        <Content Update="Assets\tnkas_logo.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Assets\Splash\splash_screen.svg" />
+        <Content Include="Assets\Icons\icon.svg" />
+        <Content Include="Assets\Icons\icon_foreground.svg" />
+        <Content Include="Assets\Icons\Vector.png" />
+        <Content Include="Assets\Icons\Xoakytu.png" />
     </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="CommunityToolkit.Mvvm" />
-    </ItemGroup>
-    
-    <ItemGroup>
-      <Content Update="Assets\tnkas_logo.png">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
-    
-    <ItemGroup>
-      <Page Update="Strings\de\Resources.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-    </ItemGroup>
+    <!-- KHỎI cần các Remove lung tung (đã gây warn NU1008 trước đó) -->
 </Project>

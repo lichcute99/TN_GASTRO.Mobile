@@ -7,6 +7,8 @@ global using Microsoft.Extensions.Options;
 global using TN_GASTRO.Mobile.Models;
 global using TN_GASTRO.Mobile.Presentation;
 global using TN_GASTRO.Mobile.Services.Endpoints;
-global using Uno.Extensions.Http.Kiota;
+// global using Uno.Extensions.Http.Kiota;   // <-- Tạm bỏ nếu chưa dùng
+
 global using ApplicationExecutionState = Windows.ApplicationModel.Activation.ApplicationExecutionState;
+
 [assembly: Uno.Extensions.Reactive.Config.BindableGenerationTool(3)]
