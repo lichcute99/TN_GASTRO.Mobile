@@ -102,15 +102,20 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Android.SE.Omapi;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using TN_GASTRO.Mobile.lib.database;
+using TN_GASTRO.Mobile.Services.UserServices;
+using Windows.ApplicationModel.Resources;
 using Windows.Globalization;
-using Windows.Storage; // ApplicationData
+using Windows.Storage;
 
 namespace TN_GASTRO.Mobile.Presentation.Views.Login
 {
     public sealed partial class LoginPage : Page
     {
+        private readonly ResourceLoader _resources = ResourceLoader.GetForCurrentView();
         private string _pin = string.Empty;
 
         public LoginPage()
@@ -130,6 +135,54 @@ namespace TN_GASTRO.Mobile.Presentation.Views.Login
             }
         }
 
+        private async void OnLoginClick(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(_pin))
+            {
+                await ShowMessageAsync(_resources.GetString("Language_Vietnamese"));
+                return;
+            }
+
+            try
+            {
+                var db = await DatabaseHelper.Instance.GetDatabaseAsync();
+                var userService = new UserService(db);
+
+                var user = await userService.LoginAsync(_pin);
+                if (user != null)
+                {
+                    await ShowMessageAsync($"Xin chào {user.Name} ({user.Code})");
+                    // TODO: Navigate sang màn hình chính
+                    // Frame?.Navigate(typeof(Shell));
+                }
+                else
+                {
+                    await ShowMessageAsync("PIN không hợp lệ, vui lòng thử lại");
+                    _pin = string.Empty;
+                    UpdateDisplay();
+                }
+            }
+            catch (Exception ex)
+            {
+                await ShowMessageAsync("Lỗi khi đăng nhập: " + ex.Message);
+            }
+        }
+
+        private async Task ShowMessageAsync(string message)
+        {
+            var dlg = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot,
+                Title = "Thông báo",
+                Content = message,
+                CloseButtonText = "OK"
+            };
+
+            await dlg.ShowAsync();
+        }
+
+
+
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
             if (_pin.Length > 0)
@@ -139,10 +192,7 @@ namespace TN_GASTRO.Mobile.Presentation.Views.Login
             }
         }
 
-        private void OnLoginClick(object sender, RoutedEventArgs e)
-        {
-            // TODO: Validate _pin hoặc điều hướng
-        }
+
 
         private void UpdateDisplay()
         {
@@ -202,3 +252,4 @@ namespace TN_GASTRO.Mobile.Presentation.Views.Login
         }
     }
 }
+

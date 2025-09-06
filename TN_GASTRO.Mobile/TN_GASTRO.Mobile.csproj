@@ -59,6 +59,8 @@
     <!-- Toolkit/Material, CommunityToolkit.Mvvm: KHÔNG set Version ở đây (Uno dùng central versions) -->
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" />
+        <PackageReference Include="sqlite-net-pcl" />
+        <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" />
     </ItemGroup>
 
     <!-- Tài nguyên cần copy -->
@@ -71,6 +73,16 @@
         <Content Include="Assets\Icons\icon_foreground.svg" />
         <Content Include="Assets\Icons\Vector.png" />
         <Content Include="Assets\Icons\Xoakytu.png" />
+    </ItemGroup>
+    <ItemGroup>
+      <Page Update="Assets\data.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+    </ItemGroup>
+    <ItemGroup>
+      <Content Update="Assets\data.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Content>
     </ItemGroup>
 
     <!-- KHỎI cần các Remove lung tung (đã gây warn NU1008 trước đó) -->
