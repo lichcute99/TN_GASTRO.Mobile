@@ -12,11 +12,11 @@ public sealed partial class HomePage : Page
 
     public HomePage()
     {
-        InitializeComponent(); 
+        InitializeComponent();
 
-        // TODO: khi có DI hãy inject ITableService; tạm thời dùng Dummy
+        // Tạo service tạm (sau này DI/Api thay thế)
         ViewModel = new HomeViewModel(new DummyTableService());
-        DataContext = ViewModel;
+        DataContext = this;
 
         Loaded += async (_, __) =>
         {
@@ -25,15 +25,11 @@ public sealed partial class HomePage : Page
         };
     }
 
-    // Header actions
     private async void Menu_Click(object sender, RoutedEventArgs e)
         => await ViewModel.OpenMenuCommand.ExecuteAsync(default);
 
     private async void Bell_Click(object sender, RoutedEventArgs e)
         => await ViewModel.OpenNotificationsCommand.ExecuteAsync(default);
-
-    private async void Group_Click(object sender, RoutedEventArgs e)
-        => await ViewModel.GroupTablesCommand.ExecuteAsync(default);
 
     private async void Area_Click(object sender, RoutedEventArgs e)
         => await ViewModel.OpenAreaPickerCommand.ExecuteAsync(default);

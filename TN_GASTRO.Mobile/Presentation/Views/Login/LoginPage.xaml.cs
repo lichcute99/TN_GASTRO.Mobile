@@ -102,7 +102,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Android.SE.Omapi;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using TN_GASTRO.Mobile.lib.database;
@@ -110,6 +109,8 @@ using TN_GASTRO.Mobile.Services.UserServices;
 using Windows.ApplicationModel.Resources;
 using Windows.Globalization;
 using Windows.Storage;
+using Uno.Extensions.Navigation;                        // <-- thêm
+using TN_GASTRO.Mobile.Presentation.Views.Home;
 
 namespace TN_GASTRO.Mobile.Presentation.Views.Login
 {
@@ -137,6 +138,7 @@ namespace TN_GASTRO.Mobile.Presentation.Views.Login
 
         private async void OnLoginClick(object sender, RoutedEventArgs e)
         {
+
             if (string.IsNullOrWhiteSpace(_pin))
             {
                 await ShowMessageAsync(_resources.GetString("Language_Vietnamese"));
@@ -151,9 +153,8 @@ namespace TN_GASTRO.Mobile.Presentation.Views.Login
                 var user = await userService.LoginAsync(_pin);
                 if (user != null)
                 {
-                    await ShowMessageAsync($"Xin chào {user.Name} ({user.Code})");
-                    // TODO: Navigate sang màn hình chính
-                    // Frame?.Navigate(typeof(Shell));
+                    NavigateToHome();      // 👈 ĐIỀU HƯỚNG TẠI ĐÂY
+                    return;
                 }
                 else
                 {
@@ -166,6 +167,30 @@ namespace TN_GASTRO.Mobile.Presentation.Views.Login
             {
                 await ShowMessageAsync("Lỗi khi đăng nhập: " + ex.Message);
             }
+
+        }
+
+        private void NavigateToHome()
+        {
+            // 1) Nếu page đang ở trong Frame, dùng ngay
+            if (this.Frame is Frame f)
+            {
+                f.Navigate(typeof(HomePage));
+                f.BackStack.Clear(); // không cho back về Login
+                return;
+            }
+
+            // 2) Nếu dùng Shell với RootFrame
+            var app = Application.Current as App;
+            if (app?.MainWindow?.Content is Shell sh && sh.Content is Frame rf)
+            {
+                rf.Navigate(typeof(HomePage));
+                rf.BackStack.Clear();
+                return;
+            }
+
+            // 3) Phương án dự phòng: thay thẳng Window.Content
+            (Application.Current as App)!.MainWindow!.Content = new HomePage();
         }
 
         private async Task ShowMessageAsync(string message)

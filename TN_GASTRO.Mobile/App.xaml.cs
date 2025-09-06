@@ -51,6 +51,8 @@ using Microsoft.Extensions.Logging;
 using Uno.Extensions;
 using Uno.Extensions.Hosting;
 using Uno.Extensions.Navigation.Toolkit;
+using Windows.ApplicationModel;
+using System.Threading.Tasks;
 
 namespace TN_GASTRO.Mobile;
 
@@ -58,8 +60,7 @@ public partial class App : Application
 {
     public App() => InitializeComponent();
 
-    protected Window? MainWindow { get; private set; }
-
+    public Window MainWindow { get; private set; } = null!;
     private async Task DebugListAssetsAsync()
     {
         try
@@ -83,8 +84,6 @@ public partial class App : Application
     {
 
         _ = DebugListAssetsAsync();
-
-
         SQLitePCL.Batteries_V2.Init();
 
         var builder = this.CreateBuilder(args)
@@ -99,20 +98,12 @@ public partial class App : Application
                         ctx.HostingEnvironment.IsDevelopment() ? LogLevel.Information : LogLevel.Warning)
                        .CoreLogLevel(LogLevel.Warning);
                 }, enableUnoLogging: true)
-            );
+            // ❌ Bỏ UseNavigation(...) vì đang dùng Frame thuần
+        );
 
         MainWindow = builder.Window;
 
-        // 🔎 SMOKE TEST: hiển thị text đơn giản để chắc chắn cửa sổ hoạt động
-        MainWindow.Content = new TextBlock
-        {
-            Text = "Boot OK",
-            FontSize = 28,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center
-        };
-
-        //MainWindow.Activate(); // 👈 thêm Activate để chắc chắn kích hoạt cửa sổ
+        // Gắn Shell làm nội dung chính
         MainWindow.Content = new TN_GASTRO.Mobile.Presentation.Shell();
         MainWindow.Activate();
     }

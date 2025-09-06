@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:utu="using:Uno.Toolkit.UI">
 
-    <Grid Background="{ThemeResource BackgroundBrush}">
+<Grid Background="{ThemeResource BackgroundBrush}">
         <!-- Frame hiển thị page -->
         <Frame x:Name="RootFrame" />
 
@@ -22,3 +22,4 @@
         </utu:ExtendedSplashScreen>
     </Grid>
 </UserControl>
+

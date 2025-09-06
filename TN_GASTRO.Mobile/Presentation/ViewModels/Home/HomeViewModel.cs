@@ -5,30 +5,24 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using IntelliJ.Lang.Annotations;
+using TN_GASTRO.Mobile.Models;
 using TN_GASTRO.Mobile.Services.Tables;
 
 namespace TN_GASTRO.Mobile.Presentation.ViewModels.Home;
 
 public sealed partial class TableItemVm : ObservableObject
 {
-    public string Id { get; }
-    public TableStatus Status { get; }
-    public string? GuestName { get; }
-    public string? AmountText { get; }
-    public string? ElapsedText { get; }
+    public Table Model { get; }
 
-    public bool IsEmpty => Status == TableStatus.Empty;
+    public TableItemVm(Table model) => Model = model;
 
-    public TableItemVm(Table t)
-    {
-        Id = t.Id;
-        Status = t.Status;
-        GuestName = t.GuestName;
-        AmountText = t.Amount.HasValue ? t.Amount.Value.ToString("0.##") : null;
-        if (t.Elapsed is TimeSpan el)
-            ElapsedText = $"{(int)el.TotalHours:00}:{el.Minutes:00}";
-    }
+    public string Id => Model.Id;
+    public string? GuestName => Model.GuestName;
+    public string? AmountText => Model.Amount?.ToString("0.##");
+    public string? ElapsedText => Model.Elapsed?.ToString(@"hh\:mm");
+
+    public bool IsOccupied => Model.Status == TableStatus.Occupied;
+    public bool IsTakeaway => Model.Status == TableStatus.Takeaway;
 }
 
 public sealed partial class HomeViewModel : ObservableObject
@@ -40,20 +34,21 @@ public sealed partial class HomeViewModel : ObservableObject
 
     public ObservableCollection<TableItemVm> Tables { get; } = new();
 
-    public HomeViewModel(ITableService svc)
-    {
-        _svc = svc;
-    }
+    public HomeViewModel(ITableService svc) => _svc = svc;
 
     [RelayCommand]
     private async Task LoadAsync(CancellationToken ct)
     {
         if (IsBusy) return;
+
         try
         {
             IsBusy = true;
             Tables.Clear();
+
+            // Lấy dữ liệu từ service tạm (Dummy) – sau này thay API
             var data = await _svc.GetTablesAsync("restaurant", ct);
+
             foreach (var t in data.Select(x => new TableItemVm(x)))
                 Tables.Add(t);
         }
@@ -68,23 +63,17 @@ public sealed partial class HomeViewModel : ObservableObject
     {
         if (item is null) return Task.CompletedTask;
 
-        // TODO: điều hướng sang trang chi tiết bàn, hoặc mở popup…
-        System.Diagnostics.Debug.WriteLine($"Click table {item.Id} - Status: {item.Status}");
-        return Task.CompletedTask;
-    }
+        System.Diagnostics.Debug.WriteLine(
+            $"Click table {item.Id} - Occupied: {item.IsOccupied} - Takeaway: {item.IsTakeaway}");
 
-    [RelayCommand]
-    private Task GroupTablesAsync(CancellationToken ct)
-    {
-        // TODO: xử lý gộp bàn sau này
-        System.Diagnostics.Debug.WriteLine("Group tables (+) clicked");
+        // TODO: Điều hướng tới chi tiết bàn khi có yêu cầu
         return Task.CompletedTask;
     }
 
     [RelayCommand]
     private Task OpenAreaPickerAsync(CancellationToken ct)
     {
-        // TODO: chọn khu vực (nhà hàng/sân vườn/tầng…)
+        // TODO: chọn khu vực
         System.Diagnostics.Debug.WriteLine("Area bar clicked");
         return Task.CompletedTask;
     }
@@ -92,16 +81,16 @@ public sealed partial class HomeViewModel : ObservableObject
     [RelayCommand]
     private Task OpenMenuAsync(CancellationToken ct)
     {
-        // TODO: mở menu dạng grid (icon trái)
-        System.Diagnostics.Debug.WriteLine("Menu icon clicked");
+        // TODO: menu trái
+        System.Diagnostics.Debug.WriteLine("Menu clicked");
         return Task.CompletedTask;
     }
 
     [RelayCommand]
     private Task OpenNotificationsAsync(CancellationToken ct)
     {
-        // TODO: mở bell notifications
-        System.Diagnostics.Debug.WriteLine("Bell icon clicked");
+        // TODO: thông báo
+        System.Diagnostics.Debug.WriteLine("Bell clicked");
         return Task.CompletedTask;
     }
 }

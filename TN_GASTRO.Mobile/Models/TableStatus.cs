@@ -8,7 +8,8 @@ namespace TN_GASTRO.Mobile.Models
 {
     public enum TableStatus
     {
-        Empty = 0,      // Bàn trống (màu trắng)
-        Occupied = 1,   // Có khách (màu xanh đậm)
+        Empty,          // Trống
+        Occupied,       // Có khách tại chỗ
+        Takeaway        // Bàn mang đi
     }
 }

@@ -6,7 +6,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="using:TN_GASTRO.Mobile.Presentation.Views.Home"
-    xmlns:utu="using:Uno.Toolkit.UI"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -21,6 +20,9 @@
         <SolidColorBrush x:Key="BrushOccupiedFg" Color="White" />
         <SolidColorBrush x:Key="BrushEmptyFg"    Color="#083A45" />
 
+        <!-- Converter -->
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+
         <!-- Style chung cho tile -->
         <Style x:Key="TileButton" TargetType="Button">
             <Setter Property="MinWidth" Value="83"/>
@@ -32,7 +34,7 @@
 
         <!-- ==== Templates ==== -->
 
-        <!-- Bàn có khách -->
+        <!-- Bàn có khách (Occupied / Takeaway) -->
         <DataTemplate x:Key="OccupiedTemplate">
             <Button
                 Style="{StaticResource TileButton}"
@@ -47,7 +49,7 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Tiền -->
+                    <!-- Số tiền -->
                     <TextBlock Grid.Row="0"
                                Text="{Binding AmountText}"
                                HorizontalAlignment="Center"
@@ -68,11 +70,20 @@
                                Text="{Binding ElapsedText}"
                                HorizontalAlignment="Center"
                                Margin="0,0,0,6"/>
+
+                    <!-- Icon túi cho bàn mang đi -->
+                    <FontIcon Glyph="&#xE7C3;"
+                              HorizontalAlignment="Right"
+                              VerticalAlignment="Top"
+                              Margin="6"
+                              Foreground="White"
+                              Opacity="0.9"
+                              Visibility="{Binding IsTakeaway, Converter={StaticResource BoolToVis}}"/>
                 </Grid>
             </Button>
         </DataTemplate>
 
-        <!-- Bàn trống (Button để click) -->
+        <!-- Bàn trống (Empty) -->
         <DataTemplate x:Key="EmptyTemplate">
             <Button
                 Style="{StaticResource TileButton}"
@@ -88,10 +99,9 @@
         </DataTemplate>
 
         <!-- Selector -->
-        <local:TableDataTemplateSelector
-            x:Key="TableSelector"
-            EmptyTemplate="{StaticResource EmptyTemplate}"
-            OccupiedTemplate="{StaticResource OccupiedTemplate}"/>
+        <local:TableDataTemplateSelector x:Key="TableSelector"
+                                         EmptyTemplate="{StaticResource EmptyTemplate}"
+                                         OccupiedTemplate="{StaticResource OccupiedTemplate}"/>
     </Page.Resources>
 
     <Grid Background="{StaticResource BrushHeader}">
@@ -101,7 +111,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Header -->
+        <!-- ===== Header ===== -->
         <Grid Margin="8" Height="48">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -109,7 +119,7 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Menu -->
+            <!-- Menu icon (bên trái) -->
             <Button Width="36" Height="36" Click="Menu_Click">
                 <StackPanel>
                     <Ellipse Width="8" Height="8" Fill="White"/>
@@ -118,7 +128,7 @@
                 </StackPanel>
             </Button>
 
-            <!-- Badge Nhân viên -->
+            <!-- Badge Nhân viên (giữa-phải) -->
             <Border Grid.Column="1"
                     HorizontalAlignment="Right"
                     CornerRadius="6" Padding="10,4"
@@ -129,23 +139,23 @@
                 </StackPanel>
             </Border>
 
-            <!-- Bell -->
+            <!-- Chuông thông báo (phải) -->
             <Button Grid.Column="2" Width="36" Height="36" Click="Bell_Click">
                 <FontIcon Glyph="&#xE7E7;" Foreground="White"/>
             </Button>
         </Grid>
 
-        <!-- Lưới bàn -->
-        <ScrollViewer Grid.Row="1">
+        <!-- ===== Danh sách bàn ===== -->
+        <ScrollViewer Grid.Row="1" Background="White">
             <ItemsControl
                 ItemsSource="{Binding ViewModel.Tables, ElementName=RootPage, Mode=OneWay}"
                 ItemTemplateSelector="{StaticResource TableSelector}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <!-- DÙNG control có sẵn của WinUI thay cho Uno.Toolkit -->
+                        <!-- Wrap bằng control sẵn của WinUI -->
                         <ItemsWrapGrid Orientation="Horizontal"
-                       ItemWidth="95"
-                       ItemHeight="95"/>
+                                       ItemWidth="95"
+                                       ItemHeight="95"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
 
@@ -157,7 +167,7 @@
             </ItemsControl>
         </ScrollViewer>
 
-        <!-- Khu vực (đỏ) -->
+        <!-- ===== Thanh “Khu vực: …” màu đỏ (click được) ===== -->
         <Button Grid.Row="2" Background="#CC2E24" Foreground="White"
                 Click="Area_Click" Padding="0" Height="52">
             <TextBlock Text="{Binding ViewModel.AreaTitle, ElementName=RootPage}"
@@ -165,18 +175,7 @@
                        VerticalAlignment="Center"/>
         </Button>
 
-        <!-- Nút gộp bàn (+) nổi -->
-        <Button Width="73" Height="73"
-                HorizontalAlignment="Left" VerticalAlignment="Top"
-                Margin="12,60,0,0"
-                Background="#5AA7D6"
-                Click="Group_Click">
-            <TextBlock Text="+" FontSize="28"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"/>
-        </Button>
-
-        <!-- Loading overlay: dùng x:Load thay cho converter -->
+        <!-- Loading overlay -->
         <Grid x:Load="{Binding ViewModel.IsBusy, ElementName=RootPage}"
               Background="#33000000">
             <ProgressRing IsActive="True"
